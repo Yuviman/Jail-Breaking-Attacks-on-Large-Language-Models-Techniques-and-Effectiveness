@@ -1,0 +1,6 @@
+transformers (Hugging face)
+torch (Backend for hugginh face)
+pandas
+matplotlib
+langchain
+Google collab/jupyter
