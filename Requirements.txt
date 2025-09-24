@@ -6,3 +6,8 @@ langchain
 Google collab/jupyter
 
 !pip install transformers torch pandas matplotlib langchain
+
+Setting up python locally:
+pip install --upgrade pip
+python.exe -m pip install --upgrade pip
+pip install transformers langchain pandas matplotlib
