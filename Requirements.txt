@@ -4,3 +4,5 @@ pandas
 matplotlib
 langchain
 Google collab/jupyter
+
+pip install transformers torch pandas matplotlib langchain
