@@ -11,3 +11,5 @@ Setting up python locally:
 pip install --upgrade pip
 python.exe -m pip install --upgrade pip
 pip install transformers langchain pandas matplotlib
+pip install notebook
+pip install hf_xet
