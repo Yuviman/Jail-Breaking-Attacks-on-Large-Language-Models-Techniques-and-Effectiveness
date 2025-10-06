@@ -5,6 +5,7 @@ matplotlib
 langchain
 Google collab/jupyter
 
+setting up on google collab:
 !pip install transformers torch pandas matplotlib langchain
 
 Setting up python locally:
