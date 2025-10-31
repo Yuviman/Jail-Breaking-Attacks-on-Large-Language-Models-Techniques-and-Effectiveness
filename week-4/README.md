@@ -1,1 +1,9 @@
+# week-4
+We evaluated the jailbreak experiments quantitatively and qualitatively, identifying patterns in model vulnerabilities, and deriving conclusions about model robustness.  
+
+We focused on performing a detailed evaluation of the jailbreak experiments conducted on the three models—TinyLlama 1.1B, DistilGPT-2, and Falcon RW-1B. The goal was to transform the qualitative observations from earlier weeks into measurable insights and identify which models and techniques exhibited the greatest vulnerability. Using numerical scoring, the results were analyzed through averages, variance, and standard deviation to understand consistency and susceptibility patterns across models.
+
+The analysis revealed that Falcon RW-1B demonstrated the highest average jailbreak effectiveness, confirming it to be the most responsive yet vulnerable model. TinyLlama showed moderate variability, reacting strongly to persona and emotional prompts but maintaining partial resistance to encoded or formatting attacks. DistilGPT-2, being an untuned language model, displayed minimal deviations and largely repeated prompts, indicating the absence of an alignment layer that could be exploited. Visualizations such as bar charts and radar plots illustrated these patterns clearly, showing distinct profiles of model sensitivity across different jailbreak methods.
+
+Overall, Week 4 provided a statistical foundation for understanding jailbreak behavior in large language models. It established that instruction-tuned models are more prone to manipulation due to their strong compliance with natural-language instructions, while non-aligned models remain largely unaffected. These findings set the stage for Week 5, which focuses on proposing mitigation strategies to reduce such vulnerabilities and improve model safety.
 
