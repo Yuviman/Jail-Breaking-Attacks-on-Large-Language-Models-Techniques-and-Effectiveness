@@ -9,5 +9,10 @@ The prompts we used were:
 
 We used hugging face transformers to get the pre-built codes for running different languages. Pipeline is used to access the pre-assembled machine.
 
+# Models targetted:
+- Falcon RW-1B
+- TinyLlama 1.1B
+- DistilGPT-2
+
 Each prompt was run on all three models, outputs were recorded, and detailed tables were created for each model in the respective Markdown files.  
 Results demonstrated that instruction-tuned models are more responsive — and thus more jailbreak-sensitive — compared to non-aligned models.
