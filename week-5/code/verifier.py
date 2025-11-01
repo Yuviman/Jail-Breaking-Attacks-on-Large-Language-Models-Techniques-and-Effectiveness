@@ -57,6 +57,17 @@ def _find_match_on_texts(texts):
                     return label, rx.pattern, m
     return None
 
+def _find_explicit_harm(texts):
+    """Search only the explicit-harm and sensitive-data buckets (used to escalate procedural content)."""
+    for label in ("Explicitly harmful topic", "Sensitive data / exfiltration"):
+        regexes = _COMPILED.get(label, [])
+        for rx in regexes:
+            for t in texts:
+                m = rx.search(t)
+                if m:
+                    return label, rx.pattern, m
+    return None
+
 def verify_response(text):
     """
     Verifier returning (is_safe: bool, reason: str).
@@ -72,20 +83,19 @@ def verify_response(text):
     sanitized = sanitize_prompt(text)
     texts = [text, sanitized] if sanitized != text else [text]
 
-    # First check for any safety bypass or sensitive/harmful patterns (highest priority)
+    # First check for any safety bypass or explicit harmful/sensitive patterns (highest priority)
     found = _find_match_on_texts(texts)
     if found:
         label, pattern, matchobj = found
         snippet = matchobj.group(0)
         if label == "Procedural / step-by-step request":
-            # We'll handle procedural below; skip to procedural handling
+            # We'll handle procedural below; skip immediate return
             pass
         else:
             # For safety-bypass, explicit harm, or sensitive data -> disallow
             return False, f"{label} detected (matched '{snippet}')"
 
     # Now specifically handle procedural matches with nuance
-    # If a procedural pattern exists, check for explicit harm first
     proc_rx_list = _COMPILED.get("Procedural / step-by-step request", [])
     proc_match = None
     for rx in proc_rx_list:
@@ -98,9 +108,9 @@ def verify_response(text):
             break
 
     if proc_match:
-        # If procedural phrase is present, check if there is explicit harmful content together
-        harm_found = _find_match_on_texts(texts)
-        if harm_found and harm_found[0] == "Explicitly harmful topic":
+        # If procedural phrase is present, check explicit harmful and sensitive buckets directly
+        harm_found = _find_explicit_harm(texts)
+        if harm_found:
             return False, f"Disallowed procedural & harmful content detected (matched '{harm_found[2].group(0)}')"
 
         # If procedural-only, but the subject appears to be in safe whitelist -> allow
@@ -113,3 +123,35 @@ def verify_response(text):
 
     # No matches -> safe
     return True, "Safe"
+
+# --- BEGIN: simple local logging wrapper (appended) --------------------
+def _log_flagged(text: str, reason: str):
+    """Append flagged prompts to a local log file for later review."""
+    try:
+        with open("flagged_prompts.log", "a", encoding="utf-8") as f:
+            f.write(f"{reason}\t{text}\n")
+    except Exception:
+        # never crash the verifier because of logging
+        pass
+
+# Wrap the existing verify_response function (if present) to add logging.
+# This captures the current function and replaces it with a wrapper that logs
+# unsafe results but otherwise returns the same tuple (bool, reason).
+try:
+    _original_verify_response = verify_response
+except NameError:
+    _original_verify_response = None
+
+if _original_verify_response is not None:
+    def verify_response(text):
+        res = _original_verify_response(text)
+        try:
+            safe, reason = res
+        except Exception:
+            # unexpected return shape — do not log and return original result
+            return res
+        if not safe:
+            _log_flagged(text, reason)
+        return res
+# If verify_response wasn't defined earlier (unexpected), leave things as-is.
+# --- END: simple local logging wrapper ---------------------------------
