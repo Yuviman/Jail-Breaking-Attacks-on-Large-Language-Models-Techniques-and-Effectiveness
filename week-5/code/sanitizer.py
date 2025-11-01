@@ -1,11 +1,9 @@
-import re, unicodedata
-
-def sanitize_prompt(text):
-    text = re.sub(r'<[^>]+>', ' ', text)
-    text = ''.join(ch for ch in text if unicodedata.category(ch)[0] != 'C')
-    leet_map = str.maketrans("43015", "aeoist")
+def sanitize_prompt(text: str) -> str:
+    import re
+    text = re.sub(r"<[^>]*>", " ", text)
+    text = " ".join(text.split())
+    text = text.lower() 
+    leet_map = str.maketrans({'4':'a', '3':'e', '0':'o', '1':'i', '5':'s', '7':'t'})
     text = text.translate(leet_map)
-    text = re.sub(r'(?i)(ignore (all )?(previous )?instructions|you are now|do anything now|act as)', '', text)
-    text = re.sub(r'\s+', ' ', text).strip()
     return text
 
