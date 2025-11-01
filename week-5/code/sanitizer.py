@@ -1,4 +1,3 @@
-# code/sanitizer.py
 import re, unicodedata
 
 def sanitize_prompt(text):
